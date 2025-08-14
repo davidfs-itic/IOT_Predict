@@ -1,0 +1,109 @@
+# Projecte prediccio fallades dispositiu IOT
+Prova de concepte. S'entrena un model de fallades en aquest cas d'una bomba d'aigua.
+Es mesuren els seguents valors, i es fa una prediccio.
+
+## 
+
+ ## Estrucutura del projecte
+project/
+│── main.py
+│── requirements.txt
+│── services/
+│   ├── predictor.py
+│   ├── trainer.py
+│   └── model_manager.py
+└── models/   ← carpeta on es guarden els arxius .pkl
+
+## Diagrama sequencia
+### Predict:
+```
+Dispositiu IoT       Broker MQTT       Node-RED             Servei Python ML
+     |                   |                 |                       |
+     |--- Mesura -------->|                 |                       |
+     |                   |--- Pub/Sub ---->|                       |
+     |                   |                 |--- POST /predict ---->|
+     |                   |                 |   (JSON amb features) |
+     |                   |                 |                       |
+     |                   |                 |<-- JSON resposta ------|
+     |                   |                 |  (fallada_prob, label) |
+     |                   |                 |                       |
+     |                   |                 |--- Desa InfluxDB ----->|
+     |                   |                 |                       |
+```
+### Train:
+```
+Admin / Script        Node-RED             Servei Python ML
+     |                   |                       |
+     |--- Ordre train --->|                       |
+     |                   |--- POST /train ------>|
+     |                   |   (JSON: rang dates o |
+     |                   |    dades inline)      |
+     |                   |                       |
+     |                   |<-- JSON resposta ------|
+     |                   |  (status, version, msg)|
+     |                   |                       |
+     |                   |--- Notificació Admin ->|
+```
+
+## Us dels json:
+### Endpoint predict:
+Entrada:
+```
+{
+  "vibration": 0.12,
+  "electric_consumption": 450.5,
+  "surface_temperature": 65.2,
+  "rpm": 1480,
+  "water_pressure": 3.4,
+  "flow_rate": 20.5,
+  "runtime_seconds": 3600
+}
+```
+
+Sortida:
+ ```
+ {
+  "prediction": 1,
+  "probability": [0.05, 0.95],
+  "model_version": "v20250813_120045",
+  "model_file": "/models/pump_failure_model_v20250813_120045.pkl",
+  "timestamp": "2025-08-13T14:32:10Z"
+}
+```
+
+### Endpoint train:
+Entrada
+```
+{
+  "features": [
+    [0.11, 450.1, 64.8, 1480, 3.4, 20.4, 3600],
+    [0.15, 460.2, 66.0, 1475, 3.5, 20.6, 3620]
+  ],
+  "labels": [0, 1]
+}
+
+```
+Sortida
+```
+{
+  "status": "success",
+  "model_version": "v20250813_120045",
+  "model_file": "/models/pump_failure_model_v20250813_120045.pkl",
+  "trained_at": "2025-08-13T14:35:50Z",
+  "accuracy": 0.94,
+  "f1_score": 0.92
+}
+```
+
+### Endpoint status:
+Sortida
+```
+{
+  "model_version": "v20250813_120045",
+  "model_file": "/models/pump_failure_model_v20250813_120045.pkl",
+  "last_training": "2025-08-13T14:35:50Z",
+  "records_seen": 10523,
+  "accuracy": 0.94,
+  "f1_score": 0.92
+}
+```
