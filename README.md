@@ -11,7 +11,7 @@ Es mesuren els seguents valors, i es fa una prediccio.
     flow_rate: float
     runtime_seconds: float
 
-Codi basat en [Aquest notebook de kaggle](https://www.kaggle.com/code/muhammadfaizan65/machine-failure- prediction-eda-modeling/notebook)
+Codi basat en [Aquest notebook de kaggle](https://www.kaggle.com/code/muhammadfaizan65/machine-failure-prediction-eda-modeling/notebook)
 
  ## Estrucutura del projecte
  ```
@@ -87,13 +87,19 @@ Sortida:
 ### Endpoint train:
 Entrada
 ```
-{
-  "features": [
-    [0.11, 450.1, 64.8, 1480, 3.4, 20.4, 3600],
-    [0.15, 460.2, 66.0, 1475, 3.5, 20.6, 3620]
-  ],
-  "labels": [0, 1]
-}
+[
+  {
+    "vibracio": 8.56,
+    "consum": 476.0,
+    "temperatura": 69.1,
+    "revolucions": 1670.0,
+    "pressio": 3.66,
+    "flux": 2.74,
+    "temps_arrencada": 283216.9,
+    "fallada": 0
+  },
+  ...
+]
 
 ```
 Sortida

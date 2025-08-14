@@ -21,8 +21,9 @@ class PredictOutput(BaseModel):
 
 # --------- Train ---------
 class TrainInput(BaseModel):
-    features: List[List[float]]
-    labels: List[int]
+    records: List[dict]  # Cada dict ha de tenir les claus de PredictInput + 'label'
+
+
 
 class TrainOutput(BaseModel):
     status: str

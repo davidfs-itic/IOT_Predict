@@ -22,16 +22,22 @@ from schemas.schemas import PredictInput
 
 
 
-
 def train_model(training_data: Dict[str, Any]) -> Dict[str, Any]:
     """
     Entrena un nou model amb les dades proporcionades.
-    training_data: ha de contenir 'features' i 'labels'
+    training_data: ha de contenir 'records', una llista de dicts amb features i label
     """
+    records = training_data.get("records")
+    if not records or not isinstance(records, list):
+        raise ValueError("Falten dades d'entrenament o format incorrecte.")
 
-    X = training_data.get("features")
-    y = training_data.get("labels")
 
+    data = pd.DataFrame(records)
+
+    feature_names = list(PredictInput.model_fields.keys())
+
+    X = data[feature_names].values
+    y = data["label"].values
 
     # Validar que tenim les dades necessàries
     if not X or not y:
@@ -48,11 +54,6 @@ def train_model(training_data: Dict[str, Any]) -> Dict[str, Any]:
     if len(X) < 10:
         raise ValueError("Insufficient data for training. Need at least 10 samples.")
 
-
-    feature_names = list(PredictInput.model_fields.keys())
-
-    data = pd.DataFrame(X, columns=feature_names)
-    data['label'] = y
 
     # Train-test split
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
