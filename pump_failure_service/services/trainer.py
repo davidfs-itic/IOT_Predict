@@ -40,8 +40,8 @@ def train_model(training_data: Dict[str, Any]) -> Dict[str, Any]:
     y = data["label"].values
 
     # Validar que tenim les dades necessàries
-    if not X or not y:
-        raise ValueError("Falten dades d'entrenament.")
+    if X.size == 0 or y.size == 0:
+        raise ValueError("Les dades d'entrenament estan buides.")
 
     # Validate data dimensions
     if X.shape[1] != len(feature_names):
@@ -81,6 +81,7 @@ def train_model(training_data: Dict[str, Any]) -> Dict[str, Any]:
 
     best_models = {}
     best_accuracy = 0
+    best_f1 = 0
     best_model_name = ''
     best_model = None
 
@@ -91,9 +92,11 @@ def train_model(training_data: Dict[str, Any]) -> Dict[str, Any]:
         print(f"Best parameters for {model_name}: {grid.best_params_}")
         y_pred = grid.best_estimator_.predict(X_test)
         accuracy = accuracy_score(y_test, y_pred)
+        
         print(f"Accuracy for {model_name}: {accuracy}")
         if accuracy > best_accuracy:
             best_accuracy = accuracy
+            best_f1 = f1_score(y_test, y_pred)
             best_model_name = model_name
             best_model = grid.best_estimator_
 
@@ -101,16 +104,13 @@ def train_model(training_data: Dict[str, Any]) -> Dict[str, Any]:
     # Guardar nou model i obtenir info
     version, model_file,scaler_file = save_new_model(best_model,scaler)
 
-    # TODO: Calcular mètriques
-    from sklearn.metrics import accuracy_score, f1_score
-    y_pred = best_model.predict(X)
-    accuracy = accuracy_score(y, y_pred)
-    f1 = f1_score(y, y_pred)
 
     return {
         "model_version": version,
+        "model_name": best_model_name,
+        "model_params": best_models[best_model_name].get_params(),
         "model_file": str(model_file),
         "trained_at": datetime.utcnow().isoformat(),
-        "accuracy": accuracy,
-        "f1_score": f1
+        "accuracy": best_accuracy,
+        "f1_score": best_f1
     }

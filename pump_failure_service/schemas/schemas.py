@@ -28,6 +28,8 @@ class TrainInput(BaseModel):
 class TrainOutput(BaseModel):
     status: str
     model_version: str
+    model_name: str
+    model_params: dict
     model_file: str
     trained_at: str
     accuracy: float

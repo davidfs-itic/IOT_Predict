@@ -1,3 +1,5 @@
+models/
+
 # Entorns virtuals
 venv/
 env/
