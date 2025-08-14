@@ -8,7 +8,7 @@ import sklearn
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, Any
-from pump_failure_service.schemas.schemas import PredictInput
+from schemas.schemas import PredictInput
 from services.model_manager import save_new_model
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.preprocessing import StandardScaler
@@ -16,8 +16,8 @@ from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score, f1_score
-from pump_failure_service.schemas.schemas import TrainInput, TrainOutput
-from pump_failure_service.schemas.schemas import PredictInput  
+from schemas.schemas import TrainInput, TrainOutput
+from schemas.schemas import PredictInput  
 
 
 

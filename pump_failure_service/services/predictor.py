@@ -2,7 +2,7 @@
 import pickle
 from pathlib import Path
 from typing import Dict, Any
-from pump_failure_service.services import model_manager
+from services import model_manager
 
 MODEL_PATH = Path("models/model_actual.pkl")
 

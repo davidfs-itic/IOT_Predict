@@ -2,7 +2,7 @@
 from fastapi import FastAPI
 from datetime import datetime
 from services import predictor, trainer, model_manager
-from models.schemas import PredictInput, PredictOutput, TrainInput, TrainOutput, StatusOutput
+from schemas.schemas import PredictInput, PredictOutput, TrainInput, TrainOutput, StatusOutput
 import logging
 
 logging.basicConfig(
