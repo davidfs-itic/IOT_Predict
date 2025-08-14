@@ -1,48 +1,61 @@
 # Projecte prediccio fallades dispositiu IOT
-Prova de concepte. S'entrena un model de fallades en aquest cas d'una bomba d'aigua.
+Prova de concepte. 
+S'entrena un model de fallades en aquest cas d'una bomba d'aigua.
 Es mesuren els seguents valors, i es fa una prediccio.
 
-## 
+    vibration: float
+    electric_consumption: float
+    surface_temperature: float
+    rpm: float
+    water_pressure: float
+    flow_rate: float
+    runtime_seconds: float
+
+Codi basat en [Aquest notebook de kaggle](https://www.kaggle.com/code/muhammadfaizan65/machine-failure- prediction-eda-modeling/notebook)
 
  ## Estrucutura del projecte
+ ```
 project/
 │── main.py
 │── requirements.txt
+│── schemas/
+│   └── schemas.py
 │── services/
 │   ├── predictor.py
 │   ├── trainer.py
 │   └── model_manager.py
 └── models/   ← carpeta on es guarden els arxius .pkl
+```
 
 ## Diagrama sequencia
 ### Predict:
 ```
-Dispositiu IoT       Broker MQTT       Node-RED             Servei Python ML
-     |                   |                 |                       |
-     |--- Mesura -------->|                 |                       |
-     |                   |--- Pub/Sub ---->|                       |
-     |                   |                 |--- POST /predict ---->|
-     |                   |                 |   (JSON amb features) |
-     |                   |                 |                       |
-     |                   |                 |<-- JSON resposta ------|
-     |                   |                 |  (fallada_prob, label) |
-     |                   |                 |                       |
-     |                   |                 |--- Desa InfluxDB ----->|
+Dispositiu IoT       Broker MQTT       Node-RED                  Servei Python ML
+     |                   |                 |                             |
+     |--- Mesura ------->|                 |                             |
+     |                   |--- Pub/Sub ---->|                             |
+     |                   |                 |--- POST /predict ---------->|
+     |                   |                 |   (JSON amb features)       |
+     |                   |                 |                             |
+     |                   |                 |<-- JSON resposta -----------|
+     |                   |                 |  (fallada_prob, label)      |
+     |                   |                 |                             |
+     |                   |                 |--- Desa InfluxDB/avisa sms->|
      |                   |                 |                       |
 ```
 ### Train:
 ```
-Admin / Script        Node-RED             Servei Python ML
-     |                   |                       |
-     |--- Ordre train --->|                       |
-     |                   |--- POST /train ------>|
-     |                   |   (JSON: rang dates o |
-     |                   |    dades inline)      |
-     |                   |                       |
-     |                   |<-- JSON resposta ------|
-     |                   |  (status, version, msg)|
-     |                   |                       |
-     |                   |--- Notificació Admin ->|
+Admin / Script        Node-RED                Servei Python ML
+     |                   |                           |
+     |--- Ordre train --->|                          |
+     |                   |--- POST /train ---------->|
+     |                   |   (JSON: rang dates o     |
+     |                   |    dades inline)          |
+     |                   |                           |
+     |                   |<-- JSON resposta ---------|
+     |                   |  (status, version, msg)   |
+     |                   |                           |
+     |                   |--- Notificació Email ---->|
 ```
 
 ## Us dels json:
