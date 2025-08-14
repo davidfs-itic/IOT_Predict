@@ -83,8 +83,7 @@ logs
 # Entorns de desplegament
 .dockerignore
 .docker/
-compose.yaml
-docker-compose*.yaml
+
 
 # PyCharm
 .idea/
