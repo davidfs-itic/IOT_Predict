@@ -1,8 +1,9 @@
 # main.py
+import json
 from fastapi import FastAPI
 from datetime import datetime
 from services import predictor, trainer, model_manager
-from schemas.schemas import PredictInput, PredictOutput, TrainInput, TrainOutput, StatusOutput
+from schemas.schemas import ModelInfo, PredictInput, PredictOutput, TrainInput, TrainOutput
 import logging
 
 logging.basicConfig(
@@ -16,8 +17,10 @@ app = FastAPI(title="Pump Failure Prediction API")
 
 @app.on_event("startup")
 async def startup_event():
-    model_manager.load_active_model()
-    
+   global info
+   if model_manager.load_active_model():
+       print(f"Model actiu carregat: {json.dumps(model_manager.get_model_info(), indent=4)}")
+
 
 # --------- Predict endpoint ---------
 @app.post("/predict", response_model=PredictOutput)
@@ -33,21 +36,22 @@ async def predict_endpoint(data: PredictInput):
 # --------- Train endpoint ---------
 @app.post("/train", response_model=TrainOutput)
 async def train_endpoint(data: TrainInput):
-    result = trainer.train_model(data.dict())
+    result = trainer.train_model(data.model_dump())
     result["status"] = "success"
     return result
 
 # --------- Status endpoint ---------
-@app.get("/status", response_model=StatusOutput)
+@app.get("/model_info", response_model=ModelInfo)
 async def status_endpoint():
-    info = model_manager.get_model_info()
-    if not info:
-        return StatusOutput(
-            model_version="none",
-            model_file="none"
+
+    if not model_manager.get_model_info():
+        return ModelInfo(
+            model_version="Not trained",
+            model_file="",
+            scaler_file="",
+            trained_at="",
+            accuracy=0.0,
+            f1_score=0.0
         )
-    # Si vols, aquí podríem incloure més estadístiques
-    return StatusOutput(
-        model_version=info["model_version"],
-        model_file=info["model_file"]
-    )
+        
+    return model_manager.get_model_info()

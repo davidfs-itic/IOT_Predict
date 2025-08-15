@@ -115,7 +115,8 @@ def train_model(training_data: Dict[str, Any]) -> ModelInfo:
     )
 
     if save_new_model(best_model, scaler, model_info):
-        print(f"Model {model_info['model_name']} guardat correctament.")
+        print(f"Model actiu desat: {model_info.model_dump_json()}")
+
     
 
     return model_info

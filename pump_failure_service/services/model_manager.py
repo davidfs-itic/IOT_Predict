@@ -4,6 +4,8 @@ import pickle
 from pathlib import Path
 from datetime import datetime
 
+from schemas.schemas import ModelInfo
+
 MODELS_DIR = Path("models/")
 MODELS_DIR.mkdir(exist_ok=True)
 
@@ -16,12 +18,12 @@ info = None
 # ------------------------------
 # Desa un nou model amb scaler
 # ------------------------------
-def save_new_model(new_model, new_scaler,model_info) -> (str, Path, Path):
+def save_new_model(new_model, new_scaler,model_info) -> (bool):
     """
     Desa un nou model amb número de versió i actualitza el model actiu.
     Retorna: (versió, ruta del model, ruta del scaler)
     """
-    global model, scaler, model_version, model_file, scaler_file
+    global model, scaler, info
 
     # Generar número de versió simple amb data
     version = datetime.utcnow().strftime("v%Y%m%d_%H%M%S")
@@ -34,8 +36,7 @@ def save_new_model(new_model, new_scaler,model_info) -> (str, Path, Path):
         pickle.dump(new_model, f)
     with open(scaler_path, "wb") as f:
         pickle.dump(new_scaler, f)
-    with open(info_path, "w") as f:
-        json.dump(model_info.dict(), f, indent=4)
+
 
     # Actualitza fitxers actius
     model_actual = MODELS_DIR / "model_actual.pkl"
@@ -51,24 +52,20 @@ def save_new_model(new_model, new_scaler,model_info) -> (str, Path, Path):
     model_info.model_file = str(model_path)
     model_info.scaler_file = str(scaler_path)
 
+    with open(info_path, "w") as f:
+        json.dump(model_info.dict(), f, indent=4)
+        
     # Actualitza variables globals
     model = new_model
     scaler = new_scaler
     info = model_info
 
-    # Guarda informació resumida
-    with open(MODELS_DIR / "model_info.json", "w") as f:
-        f.write(f'{{"model_version": "{version}", "model_file": "{model_file}", "scaler_file": "{scaler_file}"}}')
-
-    with open(MODELS_DIR / "model_active.txt", "w") as f:
-        f.write(f"{version}\n{model_file}\n{scaler_file}")
-
-    return version, model_path, scaler_path
+    return True
 
 # ------------------------------
 # Carrega el model actiu
 # ------------------------------
-def load_active_model():
+def load_active_model() -> bool:
     """
     Carrega el model i scaler actius a les variables globals.
     """
@@ -90,22 +87,10 @@ def load_active_model():
     with open(info_actual, "r") as f:
         info = json.load(f)
 
-    model_file = model_actual
-    scaler_file = scaler_actual
-    model_version = model_actual.stem.replace("pump_failure_model_", "")
-
-    print(f"Model actiu carregat: {info}")
     return True
 
 # ------------------------------
-# Retorna informació del model
+# Afegim una funció per retornar la informació del model
 # ------------------------------
 def get_model_info():
-    """
-    Retorna informació del model actiu.
-    """
-    return {
-        "model_version": model_version,
-        "model_file": str(model_file) if model_file else None,
-        "scaler_file": str(scaler_file) if scaler_file else None
-    }
+    return info
