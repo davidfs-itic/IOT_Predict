@@ -119,7 +119,20 @@ Sortida
 
 ## Per provar l'aplicació en local (Sense docker):
 
-Des de la carpeta pump_failure_service
+Des de la carpeta pump_failure_service:
+
+Crear entorn virual
+```
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+Instal·lar requeriments:
+```
+pip install -r requirements.txt
+```
+
+Executar la app
 ```
 uvicorn main:app --host 0.0.0.0 --port 8443 --ssl-keyfile ssl/key.pem --ssl-certfile ssl/cert.pem --reload 
 ```
