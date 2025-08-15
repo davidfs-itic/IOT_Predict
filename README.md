@@ -24,8 +24,15 @@ project/
 │   ├── predictor.py
 │   ├── trainer.py
 │   └── model_manager.py
+│── testing/
+│   ├── data_generator.py
+│   └── pump_failure_dataset.json
 └── models/   ← carpeta on es guarden els arxius .pkl
 ```
+
+L'arxiu pump_failure_dataset.json té un json preparar per utilitzar en la funció train.
+
+
 
 ## Diagrama sequencia
 ### Predict:
@@ -77,10 +84,7 @@ Sortida:
  ```
  {
   "prediction": 1,
-  "probability": [0.05, 0.95],
-  "model_version": "v20250813_120045",
-  "model_file": "/models/pump_failure_model_v20250813_120045.pkl",
-  "timestamp": "2025-08-13T14:32:10Z"
+  "probability": [0.05, 0.95]
 }
 ```
 
@@ -104,25 +108,18 @@ Entrada
 ```
 Sortida
 ```
-{
-  "status": "success",
-  "model_version": "v20250813_120045",
-  "model_file": "/models/pump_failure_model_v20250813_120045.pkl",
-  "trained_at": "2025-08-13T14:35:50Z",
-  "accuracy": 0.94,
-  "f1_score": 0.92
-}
+# todo
 ```
 
 ### Endpoint status:
 Sortida
 ```
-{
-  "model_version": "v20250813_120045",
-  "model_file": "/models/pump_failure_model_v20250813_120045.pkl",
-  "last_training": "2025-08-13T14:35:50Z",
-  "records_seen": 10523,
-  "accuracy": 0.94,
-  "f1_score": 0.92
-}
+# todo
+```
+
+## Per provar l'aplicació en local (Sense docker):
+
+Des de la carpeta pump_failure_service
+```
+uvicorn main:app --host 0.0.0.0 --port 8443 --ssl-keyfile ssl/key.pem --ssl-certfile ssl/cert.pem --reload 
 ```
