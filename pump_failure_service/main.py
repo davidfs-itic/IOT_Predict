@@ -36,8 +36,18 @@ async def predict_endpoint(data: PredictInput):
 # --------- Train endpoint ---------
 @app.post("/train", response_model=TrainOutput)
 async def train_endpoint(data: TrainInput):
-    result = trainer.train_model(data.model_dump())
-    result["status"] = "success"
+    try:
+        model = trainer.train_model(data.model_dump())
+        result = {
+            "status": "success",
+            "model": model
+        }
+    except Exception as e:
+        logger.error(f"Error during training: {e}")
+        result = {
+            "status": "error:" + str(e),
+            "model": None
+        }
     return result
 
 # --------- Status endpoint ---------

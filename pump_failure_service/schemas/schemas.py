@@ -22,17 +22,6 @@ class TrainInput(BaseModel):
     records: List[dict]  # Cada dict ha de tenir les claus de PredictInput + 'label'
 
 
-
-class TrainOutput(BaseModel):
-    status: str
-    model_version: str
-    model_name: str
-    model_params: dict
-    model_file: str
-    trained_at: str
-    accuracy: float
-    f1_score: float
-
 #------------ Info ------------
 
 class ModelInfo(BaseModel):
@@ -45,3 +34,6 @@ class ModelInfo(BaseModel):
     accuracy: float
     f1_score: float
 
+class TrainOutput(BaseModel):
+    status: str
+    model: ModelInfo
