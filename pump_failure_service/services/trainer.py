@@ -8,7 +8,7 @@ import sklearn
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, Any
-from schemas.schemas import PredictInput
+from schemas.schemas import ModelInfo, PredictInput
 from services.model_manager import save_new_model
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.preprocessing import StandardScaler
@@ -22,7 +22,7 @@ from schemas.schemas import PredictInput
 
 
 
-def train_model(training_data: Dict[str, Any]) -> Dict[str, Any]:
+def train_model(training_data: Dict[str, Any]) -> ModelInfo:
     """
     Entrena un nou model amb les dades proporcionades.
     training_data: ha de contenir 'records', una llista de dicts amb features i label
@@ -101,16 +101,21 @@ def train_model(training_data: Dict[str, Any]) -> Dict[str, Any]:
             best_model = grid.best_estimator_
 
     print(f"\nBest model: {best_model_name} with accuracy: {best_accuracy}")
-    # Guardar nou model i obtenir info
-    version, model_file,scaler_file = save_new_model(best_model,scaler)
+    # Guardar nou model i info
 
+    model_info: ModelInfo = ModelInfo(
+        model_version="None",
+        model_name=best_model_name,
+        model_params=best_models[best_model_name].get_params(),
+        model_file="None",
+        scaler_file="None",
+        trained_at=datetime.utcnow().isoformat(),
+        accuracy=best_accuracy,
+        f1_score=best_f1
+    )
 
-    return {
-        "model_version": version,
-        "model_name": best_model_name,
-        "model_params": best_models[best_model_name].get_params(),
-        "model_file": str(model_file),
-        "trained_at": datetime.utcnow().isoformat(),
-        "accuracy": best_accuracy,
-        "f1_score": best_f1
-    }
+    if save_new_model(best_model, scaler, model_info):
+        print(f"Model {model_info['model_name']} guardat correctament.")
+    
+
+    return model_info

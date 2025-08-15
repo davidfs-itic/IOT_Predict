@@ -15,9 +15,7 @@ class PredictInput(BaseModel):
 class PredictOutput(BaseModel):
     prediction: int
     probability: Optional[List[float]] = None
-    model_version: str
-    model_file: str
-    timestamp: str
+    model_info: Optional[dict] = None
 
 # --------- Train ---------
 class TrainInput(BaseModel):
@@ -43,3 +41,14 @@ class StatusOutput(BaseModel):
     records_seen: Optional[int] = None
     accuracy: Optional[float] = None
     f1_score: Optional[float] = None
+
+class ModelInfo(BaseModel):
+    model_version: str
+    model_name: str
+    model_params: dict
+    model_file: str
+    scaler_file: str
+    trained_at:str
+    accuracy: float
+    f1_score: float
+
